@@ -14,7 +14,7 @@ const io = new Server(server,{
 })
 
 connectDB();
-const port = 3005
+const port = 5000
 
 app.use(cors());
 app.use(express.json());
@@ -23,6 +23,22 @@ app.use(express.json());
 //   res.send("hello world")
 // })
 app.use("/api/auth/", require("./routes/authRoutes"));
+app.use("/api/chat/", require("./routes/authRoutes"));
+
+io.on('connection',(socket)=>{
+  console.log("a user connected ",socket.id)
+  socket.on("sendMessage", async (data)=>{
+    const {senderId, content}=data;
+
+    const Message = require("./models/Message");
+    const message = new Message({ sender: senderId, content });
+    await message.save();
+    io.emit("receiveMessage", message);
+  });
+  socket.on("disconnect", () => {
+    console.log("A user disconnected:", socket.id);
+  });
+})
 
 app.listen(port, () => {
   console.log(`server is running on port ${port}`)
