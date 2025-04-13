@@ -1,9 +1,9 @@
-const mongoose = require("mongoose")
+const mongoose = require("mongoose");
 
-const MessageSchema = new mongoose.Schame({
+const MessageSchema = new mongoose.Schema({
   sender: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
-  content: { tpye: String, required: true },
+  content: { type: String, required: true }, // fixed typo here
   timestamp: { type: Date, default: Date.now },
-})
+});
 
-module.exports = mongoose.Model("Message", MessageSchema)
+module.exports = mongoose.model("Message", MessageSchema); // fixed Model to model

@@ -23,7 +23,7 @@ app.use(express.json());
 //   res.send("hello world")
 // })
 app.use("/api/auth/", require("./routes/authRoutes"));
-app.use("/api/chat/", require("./routes/authRoutes"));
+app.use("/api/chat/", require("./routes/chatRoutes"));
 
 io.on('connection',(socket)=>{
   console.log("a user connected ",socket.id)
