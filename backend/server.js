@@ -15,7 +15,7 @@ const io = new Server(server, {
 })
 
 connectDB();
-const port = 5000
+const port = 3000
 
 app.use(cors());
 app.use(express.json());
