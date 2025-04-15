@@ -55,7 +55,7 @@ socket.on("receiveMessage", (message) => {
 
 async function populateReceiverSelect() {
     try {
-        const response = await fetch("http://127.0.0.1:5000/api/chat/users");
+        const response = await fetch("/api/chat/users");
         if (!response.ok) {
             throw new Error("Failed to fetch error");
         }
