@@ -98,7 +98,7 @@ async function loadConversation(receiverId) {
     try {
         const token = localStorage.getItem("token");
         // Assume you have a function to decode the token and get the current user data if needed.
-        const response = await fetch(`http://localhost:5000/api/chat/conversation?userId=${userId}&receiverId=${receiverId}`, {
+        const response = await fetch(`/api/chat/conversation?userId=${userId}&receiverId=${receiverId}`, {
             method: "GET",
             headers: {
                 "Content-Type": "application/json",
