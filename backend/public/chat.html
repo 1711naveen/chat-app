@@ -4,203 +4,31 @@
 <head>
   <meta name="viewport" content="width=device-width,initial-scale=1.0">
   <title>Socket.IO chat</title>
-  <style>
-    body {
-      margin: 0;
-      padding-bottom: 3rem;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-    }
-
-    #form {
-      background: rgba(0, 0, 0, 0.15);
-      padding: 0.25rem;
-      position: fixed;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      display: flex;
-      height: 3rem;
-      box-sizing: border-box;
-      backdrop-filter: blur(10px);
-    }
-
-    #input {
-      border: none;
-      padding: 0 1rem;
-      flex-grow: 1;
-      border-radius: 2rem;
-      margin: 0.25rem;
-    }
-
-    #input:focus {
-      outline: none;
-    }
-
-    #form>button {
-      background: #333;
-      border: none;
-      padding: 0 1rem;
-      margin: 0.25rem;
-      border-radius: 3px;
-      outline: none;
-      color: #fff;
-    }
-
-    #messages {
-      list-style-type: none;
-      margin: 0;
-      padding: 0;
-    }
-
-    #messages>li {
-      padding: 0.5rem 1rem;
-    }
-
-    #messages>li:nth-child(odd) {
-      background: #efefef;
-    }
-  </style>
+  <link rel="stylesheet" href="./css/styles.css">
 </head>
 
 <body>
-  <select id="receiverSelect">
-    <option value="">--Select a User--</option>
-    <option value="67fe15ce34c2fc066049cb57">harshit</option>
-    <option value="67f76c16653aa2e3af85f8bf">1711</option>
-  </select>
+  <div class="container">
+    <div class="container-left">
+      <div id="message-list" style="height: 100vh;">
 
-  <ul id="messages"></ul>
-  <form id="form" action="">
-    <input id="input" autocomplete="off" /><button>Send</button>
-  </form>
+      </div>
+    </div>
+    <div class="container-right" style="height: 100vh;">
+      <div>
+        <h3 id="name"></h3>
+        <ul id="messages"></ul>
+        <form id="form" action="">
+          <input id="input" autocomplete="off" /><button>Send</button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- <select id="receiverSelect"></select> -->
+
   <script src="/socket.io/socket.io.js"></script>
-
-  <script>
-    const socket = io();
-    const form = document.getElementById('form');
-    const token = localStorage.getItem("token")
-    if (!token) {
-      window.location.href("index.html")
-    }
-    const userData = parseJwt(token);
-    const userId = userData.id;
-    socket.emit("join", userId);
-
-    form.addEventListener('submit', (e) => {
-      e.preventDefault();
-      const messageInput = document.getElementById("input");
-      const message = messageInput.value;
-      // const senderId = parseJwt(token).id;
-      const receiverId = getReceiverIdSomehow();
-
-      // socket.emit("sendMessage", message);
-      // socket.emit("sendMessage", { senderId, content: message });
-      socket.emit("sendMessage", { senderId: userId, receiverId, content: message });
-      messageInput.value = "";
-    });
-
-
-    function getReceiverIdSomehow() {
-      const selectElem = document.getElementById("receiverSelect");
-      if (selectElem) {
-        const selectedUserId = selectElem.value;
-        if (selectedUserId === "") {
-          alert("Please select a recipient.");
-          return null;
-        }
-        return selectedUserId;
-      }
-      // Optionally, you could fallback to a default recipient if needed.
-      return null;
-    }
-
-
-    function parseJwt(token) {
-      const base64 = token.split('.')[1].replace(/-/g, '+').replace(/_/g, '/');
-      const jsonPayload = decodeURIComponent(atob(base64).split('').map(c => {
-        return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
-      }).join(''));
-
-      return JSON.parse(jsonPayload);
-    }
-
-    socket.on("receiveMessage", (message) => {
-      console.log(message.content)
-      const li = document.createElement("li");
-      li.textContent = message.content;
-      document.getElementById("messages").appendChild(li);
-    });
-
-    async function populateReceiverSelect() {
-      try {
-        const response = await fetch("http://127.0.0.0:5000/api/users");
-        if (!response.ok) {
-          throw new Error("Failed to fetch error");
-        }
-        const users = await responose.json();
-
-        const receiverSelect = document.getElementById("receiverSelect");
-        receiverSelect.innerHTML = `<option value="">--Select a User--</option>`;
-
-        users.forEach(user => {
-          const option = document.createElement("option");
-          option.value = user._id;
-          option.textContent = user.username;
-          receiverSelect.appendChild(option);
-
-        });
-
-      } catch (error) {
-        console.error("Error populating users:", error);
-      }
-    }
-
-
-    async function loadConversation(receiverId) {
-      try {
-        const token = localStorage.getItem("token");
-        // Assume you have a function to decode the token and get the current user data if needed.
-        const response = await fetch(`http://localhost:5000/api/chat/conversation?userId=${userId}&receiverId=${receiverId}`, {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: token
-          }
-        });
-
-        if (!response.ok) {
-          throw new Error("Failed to fetch conversation history");
-        }
-
-        const messages = await response.json();
-        console.log(messages)
-        displayMessages(messages);
-      } catch (error) {
-        console.error("Error loading conversation:", error);
-      }
-    }
-
-    function displayMessages(messages) {
-      const messagesList = document.getElementById("messages");
-      messagesList.innerHTML = ""; // Clear previous messages
-
-      messages.forEach((message) => {
-        const li = document.createElement("li");
-        // Optionally, format the message to show sender, content, and timestamp.
-        li.textContent = `${message.sender === userId ? 'You' : 'Them'}: ${message.content}`;
-        messagesList.appendChild(li);
-      });
-    }
-
-
-    document.getElementById("receiverSelect").addEventListener("change", (event) => {
-      const receiverId = event.target.value;
-      if (receiverId) {
-        loadConversation(receiverId);
-      }
-    });
-
-  </script>
+  <script src="./js/chat.js"></script>
 </body>
 
 </html>

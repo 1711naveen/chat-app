@@ -1,4 +1,5 @@
 const Message = require("../models/Message");
+const User = require("../models/User")
 
 const getMessages = async (req, res) => {
   try {
@@ -28,4 +29,15 @@ const getConversation = async (req, res) => {
   }
 };
 
-module.exports = { getMessages, getConversation };
+const getUsers = async (req, res)=>{
+  try{
+    const users = await User.find({}, "_id username");
+    res.status(200).json(users);
+
+  }catch (error) {
+    console.error("Error fetching conversation:", error);
+    res.status(500).json({ message: "Server error", error });
+  }
+}
+
+module.exports = { getMessages, getConversation, getUsers };

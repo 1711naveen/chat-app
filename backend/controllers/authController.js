@@ -11,17 +11,17 @@ const registerUser = async (req, res) => {
     }
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
-    
-    
+
+
     user = new User({
       firstName,
       lastName,
       username,
       password: hashedPassword
     })
-    
+
     await user.save();
-    
+
     const token = jwt.sign({ id: user._id }, "secret", { expiresIn: "1d" });
 
     return res.status(200).json({ message: "User saved" });
@@ -43,7 +43,7 @@ const loginUser = async (req, res) => {
   if (!isMatch) return res.status(400).json({ message: "Invalid credentials" });
 
   const token = jwt.sign({ id: user._id }, "secret", { expiresIn: "1d" });
-  return res.status(200).json({ message: "Login successful", token });
+  return res.status(200).json({ message: "Login successful", token, name: user.firstName });
 }
 
 

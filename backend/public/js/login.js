@@ -1,20 +1,20 @@
-async function login(){
-  const username=document.getElementById("username").value;
-  const password=document.getElementById("password").value;
+async function login() {
+  const username = document.getElementById("username").value;
+  const password = document.getElementById("password").value;
 
-  const res=await fetch('/api/auth/login',{
-    method:"POST",
-    headers:{
-      "Content-Type":"application/json",   
+  const res = await fetch('/api/auth/login', {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
     },
     body: JSON.stringify({ username, password })
   })
 
-  const data=await res.json();
+  const data = await res.json();
   console.log(data)
-  if(res.ok){
-    localStorage.setItem("token",data.token);
-    window.location.href="chat.html";
+  if (res.ok) {
+    localStorage.setItem("token", data.token);
+    window.location.href = "chat.html";
   }
   else {
     alert(data.message || "Login failed");
