@@ -17,13 +17,17 @@ form.addEventListener('submit', (e) => {
     const message = messageInput.value;
     const receiverId = getReceiverIdSomehow();
     socket.emit("sendMessage", { senderId: userId, receiverId, content: message });
+    const li = document.createElement("li");
+    li.textContent = message;
+    li.style.textAlign = "right";
+    document.getElementById("messages").appendChild(li);
     messageInput.value = "";
 });
 
 
 function getReceiverIdSomehow() {
     // const selectElem = document.getElementById("receiverSelect");
-    const selectElem = document.querySelector("#message-List p.selected");
+    const selectElem = document.querySelector("#message-list p.selected");
     if (selectElem) {
         const selectedUserId = selectElem.dataset.userId;
         if (selectedUserId === "") {
@@ -47,34 +51,39 @@ function parseJwt(token) {
 }
 
 socket.on("receiveMessage", (message) => {
-    console.log(message.content)
     const li = document.createElement("li");
     li.textContent = message.content;
+    li.style.textAlign = "left";
     document.getElementById("messages").appendChild(li);
 });
+
 
 async function populateReceiverSelect() {
     try {
         const response = await fetch("/api/chat/users");
         if (!response.ok) {
-            throw new Error("Failed to fetch error");
+            throw new Error("Failed to fetch users");
         }
         const users = await response.json();
+        const messageList = document.getElementById("message-list");
+        const containerRight = document.querySelector(".container-right");
+        const headingName = document.getElementById("name");
 
-        const messageList = document.getElementById("message-list")
-
-        users.forEach(user => {
+        users.forEach((user) => {
             const p = document.createElement("p");
             p.dataset.userId = user._id;
             p.textContent = user.username;
-            p.style.border = "2px solid yellow";
-            p.style.padding = "10px";
-            p.style.cursor = "pointer";
+            p.classList.add("user-item");
 
             p.addEventListener("click", () => {
                 // Remove previous selection
-                document.querySelectorAll("#message-list p").forEach(ele => ele.classList.remove("selected"));
+                document.querySelectorAll("#message-list p").forEach((ele) =>
+                    ele.classList.remove("selected")
+                );
                 p.classList.add("selected");
+
+                // Show the chat container
+                containerRight.classList.remove("hidden");
 
                 // Update heading
                 headingName.textContent = user.username;
@@ -85,13 +94,14 @@ async function populateReceiverSelect() {
                     loadConversation(receiverId);
                 }
             });
+
             messageList.appendChild(p);
         });
-
     } catch (error) {
         console.error("Error populating users:", error);
     }
 }
+
 
 
 async function loadConversation(receiverId) {
@@ -111,7 +121,6 @@ async function loadConversation(receiverId) {
         }
 
         const messages = await response.json();
-        console.log(messages)
         displayMessages(messages);
     } catch (error) {
         console.error("Error loading conversation:", error);
@@ -123,10 +132,14 @@ function displayMessages(messages) {
     messagesList.innerHTML = ""; // Clear previous messages
 
     messages.forEach((message) => {
+        // const li = document.createElement("li");
+        // li.textContent = `${message.sender === userId ? 'You' : 'Them'}: ${message.content}`;
+        // messagesList.appendChild(li);
         const li = document.createElement("li");
-        // Optionally, format the message to show sender, content, and timestamp.
-        li.textContent = `${message.sender === userId ? 'You' : 'Them'}: ${message.content}`;
+        li.className = message.sender === userId ? "msg-you" : "msg-them";
+        li.innerHTML = `<span>${message.sender === userId ? 'You' : 'Them'}: ${message.content}</span>`;
         messagesList.appendChild(li);
+
     });
 }
 

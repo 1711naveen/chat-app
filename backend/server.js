@@ -15,7 +15,7 @@ const io = new Server(server, {
 })
 
 connectDB();
-const port = 3000
+const port = 5000
 
 app.use(cors());
 app.use(express.json());
@@ -32,25 +32,8 @@ app.get('/', (req, res) => {
 app.use("/api/auth/", require("./routes/authRoutes"));
 app.use("/api/chat/", require("./routes/chatRoutes"));
 
-// io.on('connection', (socket) => {
-//   console.log("a user connected ", socket.id)
-//   socket.on("sendMessage", async (data) => {
-//     const { senderId, content } = data;
-
-//     console.log(data);
-
-//     const Message = require("./models/Message");
-//     const message = new Message({ sender: senderId, content });
-//     await message.save();
-//     io.emit("receiveMessage", content);
-//   });
-//   socket.on("disconnect", () => {
-//     console.log("A user disconnected:", socket.id);
-//   });
-// })
 
 // Define a global object to store userId to socketId mappings
-
 const userSockets = {};
 
 io.on('connection', (socket) => {
@@ -103,19 +86,4 @@ io.on('connection', (socket) => {
 server.listen(port, () => {
   console.log(`server is running on port ${port}`)
 })
-
-
-
-//for testing ec2
-// const express = require('express')
-// const app = express()
-// const port = 3000
-
-// app.get('/', (req, res) => {
-//   res.send('Hello World!')
-// })
-
-// app.listen(port, '0.0.0.0', () => {
-//   console.log(`Example app listening on port ${port}`)
-// })
 

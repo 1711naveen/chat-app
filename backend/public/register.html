@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Register</title>
+  <link rel="stylesheet" href="./css/styles.css" />
+</head>
+<body class="main">
+  <div class="form-container">
+    <h2>Register</h2>
+
+    <label for="firstname">First Name</label>
+    <input type="text" id="firstname" placeholder="Enter first name" />
+
+    <label for="lastname">Last Name</label>
+    <input type="text" id="lastname" placeholder="Enter last name" />
+
+    <label for="username">Username</label>
+    <input type="text" id="username" placeholder="Choose a username" />
+
+    <label for="password">Password</label>
+    <input type="password" id="password" placeholder="Choose a password" />
+
+    <button onclick="register()">Register</button>
+    <p>Already have an account? <a href="/">Login here</a></p>
+  </div>
+
+  <script defer src="./js/register.js"></script>
+</body>
+</html>

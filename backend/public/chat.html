@@ -8,27 +8,31 @@
 </head>
 
 <body>
+
   <div class="container">
     <div class="container-left">
-      <div id="message-list" style="height: 100vh;">
-
-      </div>
+      <h2> Chating App</h2>
+      <div id="message-list" class="user-list"></div>
     </div>
-    <div class="container-right" style="height: 100vh;">
+
+    <div class="container-right hidden">
       <div>
         <h3 id="name"></h3>
         <ul id="messages"></ul>
         <form id="form" action="">
-          <input id="input" autocomplete="off" /><button>Send</button>
+          <input id="input" autocomplete="off" placeholder="Type your message..." />
+          <button style="width: 80px;">Send</button>
         </form>
       </div>
     </div>
   </div>
 
+  </div>
+
   <!-- <select id="receiverSelect"></select> -->
 
   <script src="/socket.io/socket.io.js"></script>
-  <script src="./js/chat.js"></script>
+  <script defer src="./js/chat.js"></script>
 </body>
 
 </html>

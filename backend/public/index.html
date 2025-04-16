@@ -1,34 +1,25 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Document</title>
-  <link rel="stylesheet" href="./css/styles.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Login</title>
+  <link rel="stylesheet" href="./css/styles.css" />
 </head>
-
 <body class="main">
-  <div class="login-form">
-    <div>
-      <h2 class="login-heading">Login Form</h2>
+  <div class="form-container">
+    <h2>Login</h2>
+    
+    <label for="username">Username</label>
+    <input type="text" id="username" placeholder="Enter your username" />
 
-      <label for="firstname">First Name</label>
-      <input type="text" name="firstname" placeholder="FirstName">
+    <label for="password">Password</label>
+    <input type="password" id="password" placeholder="Enter your password" />
 
-      <label for="lastname">Last Name</label>
-      <input type="text" name="lastname" placeholder="FirstName">
-
-      <label for="username">Username</label>
-      <input type="text" name="username" id="username" placeholder="Username">
-
-      <label for="password">Password</label>
-      <input type="password" name="password" id="password" placeholder="Password">
-
-      <button onclick="login()">Login</button>
-    </div>
+    <button onclick="login()">Login</button>
+    <p>Don't have an account? <a href="register.html">Register here</a></p>
   </div>
-  <script defer src="js/login.js"></script>
-</body>
 
+  <script defer src="./js/login.js"></script>
+</body>
 </html>
