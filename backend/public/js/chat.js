@@ -14,12 +14,14 @@ socket.emit("join", userId);
 form.addEventListener('submit', (e) => {
     e.preventDefault();
     const messageInput = document.getElementById("input");
-    const message = messageInput.value;
+    const message = messageInput.value.trim();
+    if (message === "")
+        return;
     const receiverId = getReceiverIdSomehow();
     socket.emit("sendMessage", { senderId: userId, receiverId, content: message });
     const li = document.createElement("li");
     li.textContent = message;
-    li.style.textAlign = "right";
+    li.classList.add("msg-you");
     document.getElementById("messages").appendChild(li);
     messageInput.value = "";
 });
@@ -53,7 +55,7 @@ function parseJwt(token) {
 socket.on("receiveMessage", (message) => {
     const li = document.createElement("li");
     li.textContent = message.content;
-    li.style.textAlign = "left";
+    li.classList.add("msg-them");
     document.getElementById("messages").appendChild(li);
 });
 
@@ -137,7 +139,8 @@ function displayMessages(messages) {
         // messagesList.appendChild(li);
         const li = document.createElement("li");
         li.className = message.sender === userId ? "msg-you" : "msg-them";
-        li.innerHTML = `<span>${message.sender === userId ? 'You' : 'Them'}: ${message.content}</span>`;
+        // li.innerHTML = `<span>${message.sender === userId ? 'You' : 'Them'}: ${message.content}</span>`;
+        li.innerHTML = message.content
         messagesList.appendChild(li);
 
     });
