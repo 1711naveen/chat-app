@@ -57,12 +57,19 @@ socket.on("receiveMessage", (message) => {
     li.textContent = message.content;
     li.classList.add("msg-them");
     document.getElementById("messages").appendChild(li);
+    moveUserToTop(message.sender)
 });
 
 
 async function populateReceiverSelect() {
     try {
-        const response = await fetch("/api/chat/users");
+        const response = await fetch("/api/chat/users", {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${token}`
+            }
+        });
         if (!response.ok) {
             throw new Error("Failed to fetch users");
         }
@@ -134,9 +141,6 @@ function displayMessages(messages) {
     messagesList.innerHTML = ""; // Clear previous messages
 
     messages.forEach((message) => {
-        // const li = document.createElement("li");
-        // li.textContent = `${message.sender === userId ? 'You' : 'Them'}: ${message.content}`;
-        // messagesList.appendChild(li);
         const li = document.createElement("li");
         li.className = message.sender === userId ? "msg-you" : "msg-them";
         // li.innerHTML = `<span>${message.sender === userId ? 'You' : 'Them'}: ${message.content}</span>`;
@@ -144,6 +148,15 @@ function displayMessages(messages) {
         messagesList.appendChild(li);
 
     });
+}
+
+function moveUserToTop(userId) {
+    const userElement = document.querySelector(`#message-list p[data-user-id="${userId}"]`);
+    const messageList = document.getElementById("message-list");
+    console.log(userElement)
+    if (userElement && messageList) {
+        messageList.insertBefore(userElement, messageList.firstChild);
+    }
 }
 
 window.addEventListener("DOMContentLoaded", populateReceiverSelect);

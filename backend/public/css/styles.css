@@ -114,7 +114,7 @@ a {
 }
 
 
-.container-right > div {
+.container-right>div {
   display: flex;
   flex-direction: column;
   height: 100%;
@@ -234,3 +234,24 @@ a {
 /* #messages>li:nth-child(odd) {
   background: #efefef;
 } */
+
+
+.user-item {
+  position: relative;
+  /* Needed for absolute positioning of dot inside */
+  padding-right: 20px;
+  /* Provide space for dot */
+}
+
+/* The dot element */
+.message-dot {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 10px;
+  height: 10px;
+  background-color: darkblue;
+  border-radius: 50%;
+  display: none;
+  /* Hidden by default */
+}
