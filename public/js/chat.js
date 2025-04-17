@@ -185,7 +185,7 @@ function moveUserToTop(userId) {
 }
 
 
-const uploadImgBtn = document.getElementById("uploadImgBtn")
+const uploadImgBtn = document.getElementById("uploadImgBtn");
 const imageInput = document.getElementById("imageInput")
 
 uploadImgBtn.addEventListener("click", () => {
