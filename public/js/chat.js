@@ -191,10 +191,9 @@ const imageInput = document.getElementById("imageInput")
 uploadImgBtn.addEventListener("click", () => {
     imageInput.click();
 })
-let i = 0;
+
 imageInput.addEventListener("change", async () => {
     const file = imageInput.files[0]
-    console.log(i); i += 1
     if (!file) return;
     const formData = new FormData();
     formData.append("image", file);
@@ -249,5 +248,50 @@ imageInput.addEventListener("change", async () => {
     }
     imageInput.value = "";
 })
+
+const uploadFileBtn = document.getElementById("uploadFileBtn")
+const fileInput = document.getElementById("fileInput");
+
+uploadFileBtn.addEventListener("click", () => {
+    fileInput.click();
+})
+
+fileInput.addEventListener('change', async () => {
+    const file = fileInput.files[0];
+    if (!file) return;
+
+    if (file.size > 10 * 1024 * 1024) {
+        alert("file too big! keep under 10MB")
+        return;
+    }
+    const receiverId = getReceiverIdSomehow();
+    const formData = new FormData();
+    formData.append("file", file);
+    formData.append("senderId", userId);
+    formData.append("receiverId", receiverId);
+
+    try {
+        const response = await fetch('api/chat/uploadFile', {
+            method: "POST",
+            headers: {
+                Authorization: `Bearer ${token}`
+            },
+            body: formData
+        })
+        const data = await response.json();
+        if (response.ok) {
+            socket.emit("sendMessage",{
+                userId,
+                receiverId,
+                content: result.imageUrl,
+                type: "file"
+            })
+        }
+    } catch (err) {
+
+    }
+})
+
+
 
 window.addEventListener("DOMContentLoaded", populateReceiverSelect);
