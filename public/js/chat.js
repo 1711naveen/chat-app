@@ -18,7 +18,7 @@ form.addEventListener('submit', (e) => {
     if (message === "")
         return;
     const receiverId = getReceiverIdSomehow();
-    socket.emit("sendMessage", { senderId: userId, receiverId, content: message });
+    socket.emit("sendMessage", { senderId: userId, receiverId, content: message, type: "text" });
     const li = document.createElement("li");
     li.textContent = message;
     li.classList.add("msg-you");
@@ -54,8 +54,21 @@ function parseJwt(token) {
 
 socket.on("receiveMessage", (message) => {
     const li = document.createElement("li");
-    li.textContent = message.content;
     li.classList.add("msg-them");
+    console.log("received:", message);
+    console.log(message.type);
+    if (message.type === "image" || message.content.startsWith("/uploads/")) {
+        const img = document.createElement("img");
+        img.src = message.content;
+        img.alt = "image message";
+        img.style.maxWidth = "200px";
+        img.style.borderRadius = "10px";
+        li.appendChild(img);
+        console.log("image send")
+    } else {
+        console.log("text send")
+        li.textContent = message.content;
+    }
     document.getElementById("messages").appendChild(li);
     moveUserToTop(message.sender)
 });
@@ -130,6 +143,8 @@ async function loadConversation(receiverId) {
         }
 
         const messages = await response.json();
+        console.log(messages);
+
         displayMessages(messages);
     } catch (error) {
         console.error("Error loading conversation:", error);
@@ -139,12 +154,22 @@ async function loadConversation(receiverId) {
 function displayMessages(messages) {
     const messagesList = document.getElementById("messages");
     messagesList.innerHTML = ""; // Clear previous messages
-
+    console.log(messages);
     messages.forEach((message) => {
         const li = document.createElement("li");
         li.className = message.sender === userId ? "msg-you" : "msg-them";
-        // li.innerHTML = `<span>${message.sender === userId ? 'You' : 'Them'}: ${message.content}</span>`;
-        li.innerHTML = message.content
+        if (message.type === 'image') {
+            const img = document.createElement('img')
+            img.src = message.content;
+            img.alt = "Image";
+            img.style.maxWidth = "200px";
+            img.style.borderRadius = "10px";
+            li.appendChild(img);
+        }
+        else {
+            // li.innerHTML = `<span>${message.sender === userId ? 'You' : 'Them'}: ${message.content}</span>`;
+            li.innerHTML = message.content
+        }
         messagesList.appendChild(li);
 
     });
@@ -158,5 +183,71 @@ function moveUserToTop(userId) {
         messageList.insertBefore(userElement, messageList.firstChild);
     }
 }
+
+
+const uploadImgBtn = document.getElementById("uploadImgBtn")
+const imageInput = document.getElementById("imageInput")
+
+uploadImgBtn.addEventListener("click", () => {
+    imageInput.click();
+})
+let i = 0;
+imageInput.addEventListener("change", async () => {
+    const file = imageInput.files[0]
+    console.log(i); i += 1
+    if (!file) return;
+    const formData = new FormData();
+    formData.append("image", file);
+
+    const token = localStorage.getItem('token')
+    const senderId = userId;
+    const receiverId = getReceiverIdSomehow();
+
+    formData.append("senderId", senderId)
+    formData.append("receiverId", receiverId)
+
+    try {
+        const response = await fetch('/api/chat/uploadImage', {
+            method: "POST",
+            headers: {
+                Authorization: `Bearer ${token}`
+            },
+            body: formData
+        })
+
+        const result = await response.json();
+        if (response.ok) {
+            console.log("image uploaded ", result)
+
+            socket.emit("sendMessage", {
+                senderId,
+                receiverId,
+                content: result.imageUrl,
+                type: "image"
+            })
+
+            const li = document.createElement("li");
+            li.classList.add("msg-you");
+            if (result.message === "Image uploaded successfully" || result.imageUrl.startsWith("/uploads/")) {
+                const img = document.createElement("img");
+                img.src = result.imageUrl;
+                img.alt = "image message";
+                img.style.maxWidth = "200px";
+                img.style.borderRadius = "10px";
+                li.appendChild(img);
+                console.log("image send")
+                document.getElementById("messages").appendChild(li);
+            } else {
+                console.log("text send")
+                li.textContent = "";
+            }
+        } else {
+            console.error("Upload error:", result.message);
+        }
+    } catch (err) {
+        console.error("Error uploading image:", err);
+    }
+    imageInput.value = "";
+})
 
 window.addEventListener("DOMContentLoaded", populateReceiverSelect);
