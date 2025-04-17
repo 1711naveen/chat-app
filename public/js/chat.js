@@ -151,29 +151,48 @@ async function loadConversation(receiverId) {
     }
 }
 
+
+// 3) Update your displayMessages function’s image‑click handler:
 function displayMessages(messages) {
     const messagesList = document.getElementById("messages");
-    messagesList.innerHTML = ""; // Clear previous messages
-    console.log(messages);
+    const modal = document.getElementById("imageModal");
+    const modalImg = document.getElementById("modalImage");
+    const closeBtn = document.querySelector(".modal-close");
+
+    // Setup close behavior once
+    closeBtn.onclick = () => modal.style.display = "none";
+    modal.onclick = e => {
+        if (e.target === modal) modal.style.display = "none";
+    };
+
+    messagesList.innerHTML = "";
     messages.forEach((message) => {
         const li = document.createElement("li");
         li.className = message.sender === userId ? "msg-you" : "msg-them";
+
         if (message.type === 'image') {
-            const img = document.createElement('img')
+            const img = document.createElement('img');
             img.src = message.content;
             img.alt = "Image";
             img.style.maxWidth = "200px";
             img.style.borderRadius = "10px";
-            li.appendChild(img);
-        }
-        else {
-            // li.innerHTML = `<span>${message.sender === userId ? 'You' : 'Them'}: ${message.content}</span>`;
-            li.innerHTML = message.content
-        }
-        messagesList.appendChild(li);
 
+            // NEW: open modal on click
+            img.addEventListener("click", () => {
+                modalImg.src = message.content;
+                modal.style.display = "flex";   // use flex to center
+            });
+
+            li.appendChild(img);
+        } else {
+            li.textContent = message.content;
+        }
+
+        messagesList.appendChild(li);
     });
 }
+
+
 
 function moveUserToTop(userId) {
     const userElement = document.querySelector(`#message-list p[data-user-id="${userId}"]`);
@@ -280,7 +299,7 @@ fileInput.addEventListener('change', async () => {
         })
         const data = await response.json();
         if (response.ok) {
-            socket.emit("sendMessage",{
+            socket.emit("sendMessage", {
                 userId,
                 receiverId,
                 content: result.imageUrl,
