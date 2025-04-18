@@ -21,9 +21,9 @@ const port = 5000
 app.use(cors());
 app.use(express.json());
 
-// app.get('/', (req, res) => {
-//   res.send("hello world")
-// })
+app.get('/', (req, res) => {
+  res.send("hello world")
+})
 
 app.use(express.static(join(__dirname, "public")));
 app.use("/uploads", express.static(join(__dirname, "uploads")));

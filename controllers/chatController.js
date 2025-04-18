@@ -6,8 +6,8 @@ const messages = async (req, res) => {
   if (!senderId || !receiverId || !content)
     return res.status(400).json({ error: "senderId, receiverId and content are required" })
   try {
-    // const message = new Message({ sender: senderId, receiver: receiverId, content, type: type || "text" });
-    // const saved = await message.save();
+    const message = new Message({ sender: senderId, receiver: receiverId, content, type: type || "text" });
+    const saved = await message.save();
     return res.status(201).json({ message: "data saved" });
   } catch (err) {
     console.error("Error saving message:", err);
