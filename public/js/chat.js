@@ -21,10 +21,11 @@ form.addEventListener('submit', async (e) => {
     socket.emit("sendMessage", { senderId: userId, receiverId, content: message, type: "text" });
 
     try {
-        const response = await fetch('/api/chat/message', {
+        const response = await fetch('/api/chat/messages', {
             method: "POST",
             headers: {
-                Authorization: `Bearer ${token}`
+                Authorization: `Bearer ${token}`,
+                "content-type": "application/json"
             },
             body: JSON.stringify({
                 senderId: userId,
@@ -33,7 +34,7 @@ form.addEventListener('submit', async (e) => {
                 type: "text",
             })
         })
-        const data=await response.json();
+        const data = await response.json();
     } catch (err) {
         console.error("Failed to save message:", err);
     }
@@ -43,6 +44,7 @@ form.addEventListener('submit', async (e) => {
     li.classList.add("msg-you");
     document.getElementById("messages").appendChild(li);
     messageInput.value = "";
+    moveUserToTop(receiverId)
 });
 
 
@@ -209,6 +211,7 @@ function displayMessages(messages) {
 
         messagesList.appendChild(li);
     });
+    messagesList.scrollTop = messagesList.scrollHeight;
 }
 
 

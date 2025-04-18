@@ -46,13 +46,13 @@ router.post("/uploadImage", upload.single("image"), async (req, res) => {
         const imageUrl = `/uploads/${req.file.filename}`;
 
         const { senderId, receiverId } = req.body;
-        const newMessage = new Message({
-            sender: senderId,
-            receiver: receiverId,
-            content: imageUrl,  // Store the image URL
-            type: "image"       // Optionally mark it as an image message
-        });
-        await newMessage.save();
+        // const newMessage = new Message({
+        //     sender: senderId,
+        //     receiver: receiverId,
+        //     content: imageUrl,  // Store the image URL
+        //     type: "image"       // Optionally mark it as an image message
+        // });
+        // await newMessage.save();
 
         res.status(200).json({ imageUrl, message: "Image uploaded successfully" });
     } catch (error) {
