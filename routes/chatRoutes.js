@@ -3,11 +3,12 @@ const multer = require("multer");
 const path = require("path");
 const fs = require("fs");
 const protect = require("../middleware/authMiddleware");
-const { getMessages, getConversation, getUsers } = require("../controllers/chatController");
+const { messages, getConversation, getUsers } = require("../controllers/chatController");
+const Message = require("../models/Message");
 
 const router = express.Router();
 
-router.get("/messages", protect, getMessages);
+router.post("/messages", protect, messages);
 router.get("/conversation", protect, getConversation);
 router.get("/users", protect, getUsers);
 
@@ -26,7 +27,7 @@ const storage = multer.diskStorage({
 
 const uploadPath = path.join(__dirname, "../uploads");
 if (!fs.existsSync(uploadPath)) {
-  fs.mkdirSync(uploadPath);
+    fs.mkdirSync(uploadPath);
 }
 
 
@@ -44,17 +45,14 @@ router.post("/uploadImage", upload.single("image"), async (req, res) => {
         // For example, if hosting locally:
         const imageUrl = `/uploads/${req.file.filename}`;
 
-        // Optionally: Save the image data into DB (if needed) along with sender/receiver info.
-        // For example, using your Message model if you want to store it as a message:
-        // const Message = require("../models/Message");
-        // const { senderId, receiverId } = req.body;
-        // const newMessage = new Message({
-        //     sender: senderId,
-        //     receiver: receiverId,
-        //     content: imageUrl,  // Store the image URL
-        //     type: "image"       // Optionally mark it as an image message
-        // });
-        // await newMessage.save();
+        const { senderId, receiverId } = req.body;
+        const newMessage = new Message({
+            sender: senderId,
+            receiver: receiverId,
+            content: imageUrl,  // Store the image URL
+            type: "image"       // Optionally mark it as an image message
+        });
+        await newMessage.save();
 
         res.status(200).json({ imageUrl, message: "Image uploaded successfully" });
     } catch (error) {
@@ -63,6 +61,44 @@ router.post("/uploadImage", upload.single("image"), async (req, res) => {
     }
 });
 
+const storageFile = multer.diskStorage({
+    destination: (req, file, cb) => {
+      const uploadPath = path.join(__dirname, "../uploads/files");
+      console.log(uploadPath)
+      fs.mkdirSync(uploadPath, { recursive: true });
+      cb(null, uploadPath);
+    },
+    filename: (req, file, cb) => {
+      const ext = path.extname(file.originalname);
+      cb(null, Date.now() + "-" + file.originalname.replace(/\s+/g, "_"));
+    },
+  });
 
+const uploadFile = multer({
+    storageFile,
+    limits: { fileSize: 10 * 1024 * 1024 }
+})
+
+router.post("/uploadFile", uploadFile.single("file"), async (req, res) => {
+    try {
+        if (!req.file)
+            return res.status(400).json({ message: "No file uploaded" });
+        const fileUrl = `/uploads/files/${req.file.originalname}`
+
+        const { senderId, receiverId } = req.body;
+        const newMessage = new Message({
+            sender: senderId,
+            receiver: receiverId,
+            content: fileUrl,
+            type: "file"
+        });
+        await newMessage.save();
+        res.status(200).json({ message: "File uploaded", fileUrl });
+
+    } catch (error) {
+        console.error("Error uploading image:", error);
+        res.status(500).json({ message: "Server error" });
+    }
+})
 
 module.exports = router;

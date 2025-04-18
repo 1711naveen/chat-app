@@ -11,7 +11,7 @@ const userId = userData.id;
 
 socket.emit("join", userId);
 
-form.addEventListener('submit', (e) => {
+form.addEventListener('submit', async (e) => {
     e.preventDefault();
     const messageInput = document.getElementById("input");
     const message = messageInput.value.trim();
@@ -19,6 +19,25 @@ form.addEventListener('submit', (e) => {
         return;
     const receiverId = getReceiverIdSomehow();
     socket.emit("sendMessage", { senderId: userId, receiverId, content: message, type: "text" });
+
+    try {
+        const response = await fetch('/api/chat/message', {
+            method: "POST",
+            headers: {
+                Authorization: `Bearer ${token}`
+            },
+            body: JSON.stringify({
+                senderId: userId,
+                receiverId,
+                content: message,
+                type: "text",
+            })
+        })
+        const data=await response.json();
+    } catch (err) {
+        console.error("Failed to save message:", err);
+    }
+
     const li = document.createElement("li");
     li.textContent = message;
     li.classList.add("msg-you");
@@ -298,6 +317,7 @@ fileInput.addEventListener('change', async () => {
             body: formData
         })
         const data = await response.json();
+        console.log(data);
         if (response.ok) {
             socket.emit("sendMessage", {
                 userId,
@@ -306,6 +326,23 @@ fileInput.addEventListener('change', async () => {
                 type: "file"
             })
         }
+
+        const li = document.createElement("li");
+        li.classList.add("msg-you");
+        if (result.message === "File uploaded successfully" || result.imageUrl.startsWith("/uploads/")) {
+            const img = document.createElement("img");
+            img.src = result.imageUrl;
+            img.alt = "image message";
+            img.style.maxWidth = "200px";
+            img.style.borderRadius = "10px";
+            li.appendChild(img);
+            console.log("image send")
+            document.getElementById("messages").appendChild(li);
+        } else {
+            console.log("text send")
+            li.textContent = "";
+        }
+
     } catch (err) {
 
     }

@@ -16,7 +16,7 @@ const io = new Server(server, {
 })
 
 connectDB();
-const port = 5000
+const port = 3000
 
 app.use(cors());
 app.use(express.json());
@@ -27,6 +27,7 @@ app.use(express.json());
 
 app.use(express.static(join(__dirname, "public")));
 app.use("/uploads", express.static(join(__dirname, "uploads")));
+app.use("/uploads/files", express.static(join(__dirname, "uploads/files")))
 
 app.get('/', (req, res) => {
     res.sendFile(join(__dirname, "public/index.html"));
@@ -56,9 +57,9 @@ io.on('connection', (socket) => {
         console.log("sendMessage data:", data);
 
         // Save the message to your database.
-        const Message = require("./models/Message");
-        const message = new Message({ sender: senderId, receiver: receiverId, content, type: type || "text" });
-        await message.save();
+        // const Message = require("./models/Message");
+        // const message = new Message({ sender: senderId, receiver: receiverId, content, type: type || "text" });
+        // await message.save();
 
         // Get the socket id for the receiver if they are online.
         const receiverSocketId = userSockets[receiverId];
