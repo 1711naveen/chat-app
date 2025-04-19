@@ -196,33 +196,43 @@ a {
 } */
 
 #messages {
-  flex-grow: 1;
+  /* flex-grow: 1; */
   max-height: 400px;
   overflow-y: auto;
   padding: 20px;
   list-style: none;
   margin: 0;
+  display: flex;
+  flex-direction: column;
 }
 
 
-.msg-you {
-  text-align: right;
-  background-color: #dcf8c6;
-  margin: 5px 10px;
-  border-radius: 12px 12px 0 12px;
+.msg-you,
+.msg-them {
+  display: inline-block;
+  /* shrink to fit text */
+  max-width: 70%;
+  /* wrap long text at 70% of container */
   padding: 8px 12px;
-  /* max-width: 70%; */
+  margin: 5px 10px;
+  word-wrap: break-word;
+  /* ensure wrapped words */
+}
+
+.msg-you {
   align-self: flex-end;
+  /* push to right */
+  background-color: #dcf8c6;
+  border-radius: 12px 12px 0 12px;
+  text-align: right;
 }
 
 .msg-them {
-  text-align: left;
-  background-color: #efefef;
-  margin: 5px 10px;
-  border-radius: 12px 12px 12px 0;
-  padding: 8px 12px;
-  /* max-width: 70%; */
   align-self: flex-start;
+  /* push to left */
+  background-color: #efefef;
+  border-radius: 12px 12px 12px 0;
+  text-align: left;
 }
 
 
@@ -253,8 +263,12 @@ a {
   height: 10px;
   background-color: darkblue;
   border-radius: 50%;
-  display: none;
+  /* display: none; */
   /* Hidden by default */
+}
+
+.notification {
+  background-color: red !important;
 }
 
 
@@ -262,32 +276,38 @@ a {
 
 /* 2) Add these styles to your stylesheet */
 .modal {
-  display: none;               /* hidden by default */
-  position: fixed;             /* sit on top of everything */
-  z-index: 1000;               /* above other content */
-  left: 0; top: 0;             /* full screen */
-  width: 100%; height: 100%;
-  background: rgba(0,0,0,0.8); /* semi‑transparent black */
-  align-items: center;         /* vertically center */
-  justify-content: center;     /* horizontally center */
+  display: none;
+  /* hidden by default */
+  position: fixed;
+  /* sit on top of everything */
+  z-index: 1000;
+  /* above other content */
+  left: 0;
+  top: 0;
+  /* full screen */
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.8);
+  /* semi‑transparent black */
+  align-items: center;
+  /* vertically center */
+  justify-content: center;
+  /* horizontally center */
 }
 
 .modal-content {
-  max-width: 90%;              /* scale down on smaller screens */
+  max-width: 90%;
+  /* scale down on smaller screens */
   max-height: 90%;
   border-radius: 8px;
-  box-shadow: 0 0 20px rgba(0,0,0,0.5);
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
 }
 
 .modal-close {
   position: absolute;
-  top: 20px; right: 30px;
+  top: 20px;
+  right: 30px;
   color: #fff;
   font-size: 2rem;
   cursor: pointer;
 }
-
-
-
-
-

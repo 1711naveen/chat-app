@@ -14,6 +14,7 @@ async function login() {
   console.log(data)
   if (res.ok) {
     localStorage.setItem("token", data.token);
+    localStorage.setItem("username", data.username);
     window.location.href = "chat.html";
   }
   else {

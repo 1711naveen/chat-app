@@ -91,8 +91,19 @@ socket.on("receiveMessage", (message) => {
         li.textContent = message.content;
     }
     document.getElementById("messages").appendChild(li);
-    moveUserToTop(message.sender)
+    moveUserToTop(message.sender);
+    showDotNotification(message.sender)
 });
+
+async function showDotNotification(userId){
+    const userElement = document.querySelector(`#message-list p[data-user-id="${userId}"]`);
+    userElement.classList.add("notification");
+    // const messageList = document.getElementById("message-list");
+    // console.log(userElement)
+    // if (userElement && messageList) {
+    //     messageList.insertBefore(userElement, messageList.firstChild);
+    // }
+}
 
 
 async function populateReceiverSelect() {
@@ -165,11 +176,16 @@ async function loadConversation(receiverId) {
 
         const messages = await response.json();
         console.log(messages);
-
+        removeNotification(receiverId);
         displayMessages(messages);
     } catch (error) {
         console.error("Error loading conversation:", error);
     }
+}
+
+async function removeNotification(receiverId){
+    const userElement = document.querySelector(`#message-list p[data-user-id="${receiverId}"]`);
+    userElement.classList.remove("notification")
 }
 
 
@@ -201,7 +217,7 @@ function displayMessages(messages) {
             // NEW: open modal on click
             img.addEventListener("click", () => {
                 modalImg.src = message.content;
-                modal.style.display = "flex";   // use flex to center
+                modal.style.display = "flex";
             });
 
             li.appendChild(img);

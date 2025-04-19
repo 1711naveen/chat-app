@@ -1,5 +1,6 @@
 const Message = require("../models/Message");
-const User = require("../models/User")
+const User = require("../models/User");
+const mongoose = require("mongoose");
 
 const messages = async (req, res) => {
   const { senderId, receiverId, content, type } = req.body;
@@ -34,14 +35,94 @@ const getConversation = async (req, res) => {
   }
 };
 
+// const getUsers = async (req, res) => {
+//   try {
+//     const users = await User.find({}, "_id username");
+//     res.status(200).json(users);
+//   } catch (error) {
+//     console.error("Error fetching conversation:", error);
+//     res.status(500).json({ message: "Server error", error });
+//   }
+// }
+
+
+
+
 const getUsers = async (req, res) => {
   try {
-    const users = await User.find({}, "_id username");
-    res.status(200).json(users);
-  } catch (error) {
-    console.error("Error fetching conversation:", error);
-    res.status(500).json({ message: "Server error", error });
+    // 1) Current user’s ObjectId
+    const currentUserId = new mongoose.Types.ObjectId(req.user._id);
+
+    const contacts = await User.aggregate([
+      // 2) Exclude yourself
+      {
+        $match: {
+          _id: { $ne: currentUserId }
+        }
+      },
+      // 3) Lookup the single most recent message between you and each user
+      {
+        $lookup: {
+          from: "messages",
+          let: { otherId: "$_id" },
+          pipeline: [
+            {
+              $match: {
+                $expr: {
+                  $or: [
+                    {
+                      $and: [
+                        { $eq: ["$sender", currentUserId] },
+                        { $eq: ["$receiver", "$$otherId"] }
+                      ]
+                    },
+                    {
+                      $and: [
+                        { $eq: ["$receiver", currentUserId] },
+                        { $eq: ["$sender", "$$otherId"] }
+                      ]
+                    }
+                  ]
+                }
+              }
+            },
+            { $sort: { timestamp: -1 } },  // newest first
+            { $limit: 1 },                 // only the latest
+            { $project: { timestamp: 1 } }
+          ],
+          as: "lastMsg"
+        }
+      },
+      // 4) Pull the timestamp (or null if never messaged)
+      {
+        $addFields: {
+          lastMessageAt: { $arrayElemAt: ["$lastMsg.timestamp", 0] }
+        }
+      },
+      // 5) Sort descending by that timestamp—nulls (never messaged) go last
+      {
+        $sort: { lastMessageAt: -1 }
+      },
+      // 6) Project only the fields you need
+      {
+        $project: {
+          _id: 1,
+          firstName: 1,
+          lastName: 1,
+          username: 1,
+          lastMessageAt: 1
+        }
+      }
+    ]);
+
+    return res.status(200).json(contacts);
+  } catch (err) {
+    console.error("Error fetching contacts:", err);
+    return res.status(500).json({ message: "Server error" });
   }
-}
+};
+
+
+
 
 module.exports = { messages, getConversation, getUsers };
