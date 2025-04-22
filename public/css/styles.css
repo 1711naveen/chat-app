@@ -87,6 +87,11 @@ a {
   height: 100vh;
 }
 
+.sidenav{
+  background-color: #2e86de;
+
+}
+
 .container-left {
   width: 25%;
   background: #f8f9fa;
@@ -129,6 +134,8 @@ a {
   cursor: pointer;
   transition: all 0.3s ease;
 }
+
+
 
 .user-list p:hover {
   background-color: #f1f1f1;

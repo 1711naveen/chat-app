@@ -2,6 +2,7 @@
 <html>
 
 <head>
+  <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1.0">
   <title>Socket.IO chat</title>
   <link rel="stylesheet" href="./css/styles.css">
@@ -10,9 +11,23 @@
 <body>
 
   <div class="container">
+    <div class="sidenav">
+      side nav
+      <p class="" id="setting">
+        setting
+      </p>
+    </div>
+
     <div class="container-left">
-      <h2> Chating App</h2>
-      <div id="message-list" class="user-list"></div>
+      <div class="chat-content">
+        <h2> Chating App</h2>
+        <div id="message-list" class="user-list"></div>
+      </div>
+
+      <div id="settings-content" class="hidden">
+        <h2>Setting Panel</h2>
+        <p id="logout">Logout</p>
+      </div>
     </div>
 
     <div class="container-right hidden">
@@ -20,7 +35,7 @@
         <h3 id="name"></h3>
         <ul id="messages"></ul>
         <!-- button for sharing image -->
-        <button id="uploadImgBtn" type="button" >Send Image</button>
+        <button id="uploadImgBtn" type="button">Send Image</button>
         <input type="file" id="imageInput" accept="image/*" style="display: none;" />
 
         <!-- button to share file -->

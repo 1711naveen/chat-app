@@ -114,8 +114,8 @@ const getUsers = async (req, res) => {
         }
       }
     ]);
-
     return res.status(200).json(contacts);
+    
   } catch (err) {
     console.error("Error fetching contacts:", err);
     return res.status(500).json({ message: "Server error" });

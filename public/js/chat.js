@@ -4,7 +4,7 @@ const token = localStorage.getItem("token");
 const headingName = document.getElementById("name");
 
 if (!token) {
-    window.location.href("index.html")
+    window.location.href = "index.html"
 }
 const userData = parseJwt(token);
 const userId = userData.id;
@@ -95,7 +95,7 @@ socket.on("receiveMessage", (message) => {
     showDotNotification(message.sender)
 });
 
-async function showDotNotification(userId){
+async function showDotNotification(userId) {
     const userElement = document.querySelector(`#message-list p[data-user-id="${userId}"]`);
     userElement.classList.add("notification");
     // const messageList = document.getElementById("message-list");
@@ -183,7 +183,7 @@ async function loadConversation(receiverId) {
     }
 }
 
-async function removeNotification(receiverId){
+async function removeNotification(receiverId) {
     const userElement = document.querySelector(`#message-list p[data-user-id="${receiverId}"]`);
     userElement.classList.remove("notification")
 }
@@ -363,10 +363,25 @@ fileInput.addEventListener('change', async () => {
         }
 
     } catch (err) {
-
+        console.error("Error in sending file ", err);
     }
 })
 
+const setting = document.getElementById("setting");
 
+setting.addEventListener("click", () => {
+    const chatContent = document.querySelector(".chat-content");
+    const settingsContent = document.getElementById("settings-content");
+
+    chatContent.classList.toggle("hidden");
+    settingsContent.classList.toggle("hidden");
+});
+
+const logout = document.getElementById("logout");
+
+logout.addEventListener("click", () => {
+    localStorage.clear();
+    window.location.href = "index.html"
+})
 
 window.addEventListener("DOMContentLoaded", populateReceiverSelect);
