@@ -361,7 +361,7 @@ fileInput.addEventListener('change', async () => {
             console.log("text send")
             li.textContent = "";
         }
-
+        
     } catch (err) {
         console.error("Error in sending file ", err);
     }
@@ -372,13 +372,31 @@ const setting = document.getElementById("setting");
 setting.addEventListener("click", () => {
     const chatContent = document.querySelector(".chat-content");
     const settingsContent = document.getElementById("settings-content");
-
-    chatContent.classList.toggle("hidden");
-    settingsContent.classList.toggle("hidden");
+    chatContent.classList.add("hidden");
+    settingsContent.classList.remove("hidden");
 });
 
-const logout = document.getElementById("logout");
+const chat = document.getElementById("chat");
+chat.addEventListener("click",()=>{
+    const chatContent = document.querySelector(".chat-content");
+    chatContent.classList.remove("hidden");
+})
 
+const modeToggle = document.getElementById("mode-toggle");
+modeToggle.addEventListener("click",()=>{
+    const theme = document.documentElement.getAttribute('data-theme');
+    if (theme === 'dark') {
+      document.documentElement.setAttribute('data-theme', 'light');
+      localStorage.setItem('theme', 'light');
+      modeToggle.textContent = '🌙';
+    } else {
+      document.documentElement.setAttribute('data-theme', 'dark');
+      localStorage.setItem('theme', 'dark');
+      modeToggle.textContent = '☀️';
+    }
+})
+
+const logout = document.getElementById("logout");
 logout.addEventListener("click", () => {
     localStorage.clear();
     window.location.href = "index.html"
