@@ -44,6 +44,7 @@ form.addEventListener('submit', async (e) => {
     li.classList.add("msg-you");
     document.getElementById("messages").appendChild(li);
     messageInput.value = "";
+    document.getElementById("messages").scrollTop = document.getElementById("messages").scrollHeight;
     moveUserToTop(receiverId)
 });
 
@@ -69,7 +70,6 @@ function parseJwt(token) {
     const jsonPayload = decodeURIComponent(atob(base64).split('').map(c => {
         return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
     }).join(''));
-
     return JSON.parse(jsonPayload);
 }
 
@@ -401,5 +401,20 @@ logout.addEventListener("click", () => {
     localStorage.clear();
     window.location.href = "index.html"
 })
+
+document.getElementById("search").addEventListener("input", function () {
+    const query = this.value.toLowerCase();
+    const users = document.querySelectorAll("#message-list .user");
+  
+    users.forEach(user => {
+      const name = user.textContent.toLowerCase();
+      if (name.includes(query)) {
+        user.style.display = "block";
+      } else {
+        user.style.display = "none";
+      }
+    });
+  });
+  
 
 window.addEventListener("DOMContentLoaded", populateReceiverSelect);
